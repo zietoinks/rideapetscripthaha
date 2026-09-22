@@ -5,6 +5,28 @@
 -- Made By Khenbanks
 --==================================================
 
+
+--==================================================
+
+-- SERVICE
+
+--==================================================
+
+local Players = game:GetService("Players")
+
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+
+local UserInputService = game:GetService("UserInputService")
+
+local VirtualInputManager = game:GetService("VirtualInputManager")
+
+local CoreGui = game:GetService("CoreGui")
+
+local Workspace = game:GetService("Workspace")
+
+local LocalPlayer = Players.LocalPlayer
+
 local oldGui = nil
 
 pcall(function()
