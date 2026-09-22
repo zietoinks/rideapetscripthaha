@@ -27,6 +27,8 @@ local Workspace = game:GetService("Workspace")
 
 local LocalPlayer = Players.LocalPlayer
 
+local TargetParent = CoreGui
+
 local oldGui = nil
 
 pcall(function()
@@ -78,6 +80,27 @@ ScreenGui.Parent = TargetParent
 --==================================================
 -- HELPERS
 --==================================================
+
+local function tween(instance, properties, duration)
+    if not instance or not instance.Parent then
+        return
+    end
+
+    local info = TweenInfo.new(
+        duration or 0.15,
+        Enum.EasingStyle.Quad,
+        Enum.EasingDirection.Out
+    )
+
+    local ok, tw = pcall(function()
+        return TweenService:Create(instance, info, properties)
+    end)
+
+    if ok and tw then
+        tw:Play()
+        return tw
+    end
+end
 
 local function createCorner(parent, radius)
     local c = Instance.new("UICorner")
