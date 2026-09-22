@@ -1,0 +1,1878 @@
+```lua
+--==================================================
+-- EGGS ESP v3.0
+-- BLACK & RED MODERN UI
+-- Made By Khenbanks
+--==================================================
+
+local oldGui = nil
+
+pcall(function()
+    oldGui = TargetParent:FindFirstChild("RenderedEggsESP_Menu")
+end)
+
+if oldGui then
+    pcall(function()
+        oldGui:Destroy()
+    end)
+end
+
+--==================================================
+-- THEME
+--==================================================
+
+local Theme = {
+    Background = Color3.fromRGB(7, 7, 9),
+    Surface = Color3.fromRGB(13, 13, 16),
+    Surface2 = Color3.fromRGB(19, 19, 23),
+    Surface3 = Color3.fromRGB(27, 27, 32),
+
+    Accent = Color3.fromRGB(255, 25, 55),
+    AccentDark = Color3.fromRGB(180, 0, 30),
+
+    Red = Color3.fromRGB(255, 45, 70),
+    RedDark = Color3.fromRGB(125, 0, 20),
+
+    Blue = Color3.fromRGB(255, 65, 85),
+    Yellow = Color3.fromRGB(255, 195, 65),
+
+    Text = Color3.fromRGB(248, 248, 250),
+    Text2 = Color3.fromRGB(180, 180, 188),
+    Text3 = Color3.fromRGB(105, 105, 115),
+
+    Border = Color3.fromRGB(43, 43, 50),
+}
+
+--==================================================
+-- SCREEN GUI
+--==================================================
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "RenderedEggsESP_Menu"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.Parent = TargetParent
+
+--==================================================
+-- HELPERS
+--==================================================
+
+local function createCorner(parent, radius)
+    local c = Instance.new("UICorner")
+    c.CornerRadius = UDim.new(0, radius or 8)
+    c.Parent = parent
+    return c
+end
+
+local function createStroke(parent, color, transparency, thickness)
+    local s = Instance.new("UIStroke")
+    s.Color = color or Theme.Border
+    s.Transparency = transparency or 0
+    s.Thickness = thickness or 1
+    s.Parent = parent
+    return s
+end
+
+local function addPadding(parent, left, right, top, bottom)
+    local p = Instance.new("UIPadding")
+    p.PaddingLeft = UDim.new(0, left or 0)
+    p.PaddingRight = UDim.new(0, right or 0)
+    p.PaddingTop = UDim.new(0, top or 0)
+    p.PaddingBottom = UDim.new(0, bottom or 0)
+    p.Parent = parent
+    return p
+end
+
+local function makeButton(button, accentColor)
+    createCorner(button, 8)
+    createStroke(button, Theme.Border, 0.3, 1)
+
+    button.AutoButtonColor = false
+
+    local normalColor = button.BackgroundColor3
+
+    button.MouseEnter:Connect(function()
+        tween(button, {
+            BackgroundColor3 = accentColor or Theme.Surface3
+        }, 0.12)
+    end)
+
+    button.MouseLeave:Connect(function()
+        tween(button, {
+            BackgroundColor3 = normalColor
+        }, 0.12)
+    end)
+
+    button.MouseButton1Down:Connect(function()
+        tween(button, {
+            BackgroundTransparency = 0
+        }, 0.05)
+    end)
+
+    button.MouseButton1Up:Connect(function()
+        tween(button, {
+            BackgroundTransparency = 0.08
+        }, 0.05)
+    end)
+end
+
+local function createSectionTitle(parent, text, y)
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, 0, 0, 18)
+    label.Position = UDim2.new(0, 0, 0, y)
+    label.BackgroundTransparency = 1
+    label.Text = text
+    label.TextColor3 = Theme.Text3
+    label.TextSize = 10
+    label.Font = Enum.Font.GothamBold
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = parent
+
+    return label
+end
+
+--==================================================
+-- DEVICE SELECTION
+--==================================================
+
+local DeviceFrame = Instance.new("Frame")
+DeviceFrame.Name = "DeviceSelection"
+DeviceFrame.Size = UDim2.new(0, 340, 0, 190)
+DeviceFrame.Position = UDim2.new(0.5, -170, 0.5, -95)
+DeviceFrame.BackgroundColor3 = Theme.Background
+DeviceFrame.BorderSizePixel = 0
+DeviceFrame.Parent = ScreenGui
+
+createCorner(DeviceFrame, 16)
+createStroke(DeviceFrame, Theme.Border, 0.1, 1.5)
+
+local DeviceAccent = Instance.new("Frame")
+DeviceAccent.Size = UDim2.new(1, 0, 0, 4)
+DeviceAccent.BackgroundColor3 = Theme.Accent
+DeviceAccent.BorderSizePixel = 0
+DeviceAccent.Parent = DeviceFrame
+
+createCorner(DeviceAccent, 2)
+
+local DeviceIcon = Instance.new("TextLabel")
+DeviceIcon.Size = UDim2.new(0, 52, 0, 52)
+DeviceIcon.Position = UDim2.new(0, 20, 0, 25)
+DeviceIcon.BackgroundColor3 = Theme.Surface2
+DeviceIcon.Text = "🥚"
+DeviceIcon.TextSize = 25
+DeviceIcon.Parent = DeviceFrame
+
+createCorner(DeviceIcon, 12)
+createStroke(DeviceIcon, Theme.AccentDark, 0.35, 1)
+
+local DeviceTitle = Instance.new("TextLabel")
+DeviceTitle.Size = UDim2.new(1, -100, 0, 25)
+DeviceTitle.Position = UDim2.new(0, 85, 0, 24)
+DeviceTitle.BackgroundTransparency = 1
+DeviceTitle.Text = "Eggs ESP"
+DeviceTitle.TextColor3 = Theme.Text
+DeviceTitle.TextSize = 20
+DeviceTitle.Font = Enum.Font.GothamBold
+DeviceTitle.TextXAlignment = Enum.TextXAlignment.Left
+DeviceTitle.Parent = DeviceFrame
+
+local DeviceSub = Instance.new("TextLabel")
+DeviceSub.Size = UDim2.new(1, -105, 0, 20)
+DeviceSub.Position = UDim2.new(0, 85, 0, 51)
+DeviceSub.BackgroundTransparency = 1
+DeviceSub.Text = "Choose your device"
+DeviceSub.TextColor3 = Theme.Text2
+DeviceSub.TextSize = 11
+DeviceSub.Font = Enum.Font.Gotham
+DeviceSub.TextXAlignment = Enum.TextXAlignment.Left
+DeviceSub.Parent = DeviceFrame
+
+local DeviceCredit = Instance.new("TextLabel")
+DeviceCredit.Size = UDim2.new(1, -105, 0, 16)
+DeviceCredit.Position = UDim2.new(0, 85, 0, 68)
+DeviceCredit.BackgroundTransparency = 1
+DeviceCredit.Text = "Made By Khenbanks"
+DeviceCredit.TextColor3 = Theme.Accent
+DeviceCredit.TextSize = 9
+DeviceCredit.Font = Enum.Font.GothamBold
+DeviceCredit.TextXAlignment = Enum.TextXAlignment.Left
+DeviceCredit.Parent = DeviceFrame
+
+local PCBtn = Instance.new("TextButton")
+PCBtn.Size = UDim2.new(0, 135, 0, 48)
+PCBtn.Position = UDim2.new(0, 20, 1, -65)
+PCBtn.BackgroundColor3 = Theme.Surface2
+PCBtn.Text = "PC"
+PCBtn.TextColor3 = Theme.Text
+PCBtn.TextSize = 13
+PCBtn.Font = Enum.Font.GothamBold
+PCBtn.Parent = DeviceFrame
+
+makeButton(PCBtn, Theme.AccentDark)
+
+local MobileBtn = Instance.new("TextButton")
+MobileBtn.Size = UDim2.new(0, 135, 0, 48)
+MobileBtn.Position = UDim2.new(1, -155, 1, -65)
+MobileBtn.BackgroundColor3 = Theme.Surface2
+MobileBtn.Text = "Mobile"
+MobileBtn.TextColor3 = Theme.Text
+MobileBtn.TextSize = 13
+MobileBtn.Font = Enum.Font.GothamBold
+MobileBtn.Parent = DeviceFrame
+
+makeButton(MobileBtn, Theme.AccentDark)
+
+--==================================================
+-- MAIN FRAME
+--==================================================
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, Config.PCWidth, 0, Config.PCHeight)
+MainFrame.Position = UDim2.new(
+    0.5,
+    -Config.PCWidth / 2,
+    0.5,
+    -Config.PCHeight / 2
+)
+MainFrame.BackgroundColor3 = Theme.Background
+MainFrame.BorderSizePixel = 0
+MainFrame.Visible = false
+MainFrame.Active = true
+MainFrame.Parent = ScreenGui
+
+createCorner(MainFrame, 15)
+createStroke(MainFrame, Theme.Border, 0.08, 1.5)
+
+--==================================================
+-- TOP BAR
+--==================================================
+
+local TopBar = Instance.new("Frame")
+TopBar.Size = UDim2.new(1, 0, 0, 64)
+TopBar.BackgroundColor3 = Theme.Surface
+TopBar.BorderSizePixel = 0
+TopBar.Parent = MainFrame
+
+createCorner(TopBar, 15)
+
+local TopLine = Instance.new("Frame")
+TopLine.Size = UDim2.new(1, -28, 0, 1)
+TopLine.Position = UDim2.new(0, 14, 1, -1)
+TopLine.BackgroundColor3 = Theme.Border
+TopLine.BorderSizePixel = 0
+TopLine.Parent = TopBar
+
+local Logo = Instance.new("Frame")
+Logo.Size = UDim2.new(0, 42, 0, 42)
+Logo.Position = UDim2.new(0, 12, 0, 11)
+Logo.BackgroundColor3 = Theme.Surface3
+Logo.Parent = TopBar
+
+createCorner(Logo, 11)
+createStroke(Logo, Theme.Accent, 0.2, 1)
+
+local LogoText = Instance.new("TextLabel")
+LogoText.Size = UDim2.new(1, 0, 1, 0)
+LogoText.BackgroundTransparency = 1
+LogoText.Text = "E"
+LogoText.TextColor3 = Theme.Accent
+LogoText.TextSize = 22
+LogoText.Font = Enum.Font.GothamBlack
+LogoText.Parent = Logo
+
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Size = UDim2.new(1, -150, 0, 22)
+TitleLabel.Position = UDim2.new(0, 64, 0, 10)
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.Text = "Eggs ESP"
+TitleLabel.TextColor3 = Theme.Text
+TitleLabel.TextSize = 16
+TitleLabel.Font = Enum.Font.GothamBold
+TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+TitleLabel.Parent = TopBar
+
+local AuthorLabel = Instance.new("TextLabel")
+AuthorLabel.Size = UDim2.new(1, -150, 0, 16)
+AuthorLabel.Position = UDim2.new(0, 64, 0, 33)
+AuthorLabel.BackgroundTransparency = 1
+AuthorLabel.Text = "Made By Khenbanks  •  v3.0"
+AuthorLabel.TextColor3 = Theme.Accent
+AuthorLabel.TextSize = 9
+AuthorLabel.Font = Enum.Font.GothamBold
+AuthorLabel.TextXAlignment = Enum.TextXAlignment.Left
+AuthorLabel.Parent = TopBar
+
+local StatusDot = Instance.new("Frame")
+StatusDot.Size = UDim2.new(0, 7, 0, 7)
+StatusDot.Position = UDim2.new(1, -95, 0, 28)
+StatusDot.BackgroundColor3 = Theme.Accent
+StatusDot.Parent = TopBar
+
+createCorner(StatusDot, 10)
+
+local StatusMini = Instance.new("TextLabel")
+StatusMini.Size = UDim2.new(0, 65, 0, 18)
+StatusMini.Position = UDim2.new(1, -82, 0, 23)
+StatusMini.BackgroundTransparency = 1
+StatusMini.Text = "ONLINE"
+StatusMini.TextColor3 = Theme.Accent
+StatusMini.TextSize = 8
+StatusMini.Font = Enum.Font.GothamBold
+StatusMini.TextXAlignment = Enum.TextXAlignment.Left
+StatusMini.Parent = TopBar
+
+local MinimizeBtn = Instance.new("TextButton")
+MinimizeBtn.Size = UDim2.new(0, 30, 0, 30)
+MinimizeBtn.Position = UDim2.new(1, -38, 0, 17)
+MinimizeBtn.BackgroundColor3 = Theme.Surface3
+MinimizeBtn.Text = "−"
+MinimizeBtn.TextColor3 = Theme.Text
+MinimizeBtn.TextSize = 19
+MinimizeBtn.Font = Enum.Font.GothamBold
+MinimizeBtn.Parent = TopBar
+
+createCorner(MinimizeBtn, 8)
+createStroke(MinimizeBtn, Theme.Border, 0.2, 1)
+
+--==================================================
+-- CONTENT
+--==================================================
+
+local ContentContainer = Instance.new("Frame")
+ContentContainer.Size = UDim2.new(1, -24, 1, -76)
+ContentContainer.Position = UDim2.new(0, 12, 0, 70)
+ContentContainer.BackgroundTransparency = 1
+ContentContainer.Parent = MainFrame
+
+--==================================================
+-- STATUS CARD
+--==================================================
+
+local StatusCard = Instance.new("Frame")
+StatusCard.Size = UDim2.new(1, 0, 0, 38)
+StatusCard.Position = UDim2.new(0, 0, 0, 0)
+StatusCard.BackgroundColor3 = Theme.Surface
+StatusCard.Parent = ContentContainer
+
+createCorner(StatusCard, 9)
+createStroke(StatusCard, Theme.Border, 0.4, 1)
+
+local StatusIndicator = Instance.new("Frame")
+StatusIndicator.Size = UDim2.new(0, 4, 0, 22)
+StatusIndicator.Position = UDim2.new(0, 9, 0.5, -11)
+StatusIndicator.BackgroundColor3 = Theme.Accent
+StatusIndicator.Parent = StatusCard
+
+createCorner(StatusIndicator, 5)
+
+StatusLabel = Instance.new("TextLabel")
+StatusLabel.Size = UDim2.new(1, -25, 1, 0)
+StatusLabel.Position = UDim2.new(0, 20, 0, 0)
+StatusLabel.BackgroundTransparency = 1
+StatusLabel.Text = "System ready"
+StatusLabel.TextColor3 = Theme.Text2
+StatusLabel.TextSize = 10
+StatusLabel.Font = Enum.Font.GothamMedium
+StatusLabel.TextXAlignment = Enum.TextXAlignment.Left
+StatusLabel.Parent = StatusCard
+
+--==================================================
+-- MODE SELECTOR
+--==================================================
+
+createSectionTitle(
+    ContentContainer,
+    "MOVEMENT MODE",
+    48
+)
+
+ModeAutoFarmBtn = Instance.new("TextButton")
+ModeAutoFarmBtn.Size = UDim2.new(0.5, -4, 0, 34)
+ModeAutoFarmBtn.Position = UDim2.new(0, 0, 0, 69)
+ModeAutoFarmBtn.BackgroundColor3 = Theme.AccentDark
+ModeAutoFarmBtn.Text = "⚡  Auto Farm"
+ModeAutoFarmBtn.TextColor3 = Color3.new(1, 1, 1)
+ModeAutoFarmBtn.TextSize = 10
+ModeAutoFarmBtn.Font = Enum.Font.GothamBold
+ModeAutoFarmBtn.Parent = ContentContainer
+
+makeButton(ModeAutoFarmBtn, Theme.Accent)
+
+ModeTeleportBtn = Instance.new("TextButton")
+ModeTeleportBtn.Size = UDim2.new(0.5, 4, 0, 34)
+ModeTeleportBtn.Position = UDim2.new(0.5, 4, 0, 69)
+ModeTeleportBtn.BackgroundColor3 = Theme.Surface2
+ModeTeleportBtn.Text = "✦  Teleport"
+ModeTeleportBtn.TextColor3 = Theme.Text2
+ModeTeleportBtn.TextSize = 10
+ModeTeleportBtn.Font = Enum.Font.GothamBold
+ModeTeleportBtn.Parent = ContentContainer
+
+makeButton(ModeTeleportBtn, Theme.Accent)
+
+ModeAutoFarmBtn.MouseButton1Click:Connect(function()
+    setMovementMode("AutoFarm")
+end)
+
+ModeTeleportBtn.MouseButton1Click:Connect(function()
+    setMovementMode("Teleport")
+end)
+
+--==================================================
+-- FEATURES
+--==================================================
+
+createSectionTitle(
+    ContentContainer,
+    "FEATURES",
+    113
+)
+
+local FeatureFrame = Instance.new("Frame")
+FeatureFrame.Size = UDim2.new(1, 0, 0, 118)
+FeatureFrame.Position = UDim2.new(0, 0, 0, 134)
+FeatureFrame.BackgroundTransparency = 1
+FeatureFrame.Parent = ContentContainer
+
+local function createFeatureButton(text, y, callback)
+    local btn = Instance.new("TextButton")
+
+    btn.Size = UDim2.new(1, 0, 0, 34)
+    btn.Position = UDim2.new(0, 0, 0, y)
+    btn.BackgroundColor3 = Theme.Surface
+    btn.Text = text
+    btn.TextColor3 = Theme.Text2
+    btn.TextSize = 10
+    btn.Font = Enum.Font.GothamMedium
+    btn.TextXAlignment = Enum.TextXAlignment.Left
+    btn.Parent = FeatureFrame
+
+    addPadding(btn, 13, 10, 0, 0)
+
+    makeButton(btn, Theme.Surface3)
+
+    btn.MouseButton1Click:Connect(callback)
+
+    return btn
+end
+
+local ToggleGlobalESPBtn = createFeatureButton(
+    "◉   ESP All: OFF",
+    0,
+    function()
+
+        mainESPActive = not mainESPActive
+
+        if mainESPActive then
+
+            ToggleGlobalESPBtn.Text = "◉   ESP All: ON"
+            ToggleGlobalESPBtn.TextColor3 = Theme.Accent
+
+            StatusLabel.Text = "ESP enabled"
+            StatusLabel.TextColor3 = Theme.Accent
+
+        else
+
+            ToggleGlobalESPBtn.Text = "◉   ESP All: OFF"
+            ToggleGlobalESPBtn.TextColor3 = Theme.Text2
+
+            StatusLabel.Text = "ESP disabled"
+            StatusLabel.TextColor3 = Theme.Text2
+
+        end
+
+        applyGlobalESP(mainESPActive)
+    end
+)
+
+local AutoBestEggBtn = createFeatureButton(
+    "🥚   Auto Best Egg: OFF",
+    42,
+    function()
+
+        autoBestEggActive = not autoBestEggActive
+
+        if autoBestEggActive then
+
+            AutoBestEggBtn.Text = "🥚   Auto Best Egg: ON"
+            AutoBestEggBtn.TextColor3 = Theme.Accent
+
+            StatusLabel.Text = "Auto Best Egg enabled"
+            StatusLabel.TextColor3 = Theme.Accent
+
+            startAutoBestEgg()
+
+        else
+
+            AutoBestEggBtn.Text = "🥚   Auto Best Egg: OFF"
+            AutoBestEggBtn.TextColor3 = Theme.Text2
+
+            StatusLabel.Text = "System ready"
+            StatusLabel.TextColor3 = Theme.Text2
+
+            stopAutoBestEgg()
+
+        end
+    end
+)
+
+local TPHomeBtn = createFeatureButton(
+    "⌂   Teleport Home",
+    84,
+    function()
+
+        local success = teleportToHomePlot()
+
+        if success then
+
+            StatusLabel.Text =
+                movementMode == "AutoFarm"
+                and "Moved to Home"
+                or "Teleported to Home"
+
+            StatusLabel.TextColor3 = Theme.Accent
+
+        else
+
+            StatusLabel.Text = "Your plot was not found"
+            StatusLabel.TextColor3 = Theme.Red
+
+        end
+    end
+)
+
+--==================================================
+-- KEYBIND + STOP
+--==================================================
+
+local KeyArea = Instance.new("Frame")
+KeyArea.Size = UDim2.new(1, 0, 0, 32)
+KeyArea.Position = UDim2.new(0, 0, 0, 258)
+KeyArea.BackgroundColor3 = Theme.Surface
+KeyArea.Parent = ContentContainer
+
+createCorner(KeyArea, 8)
+createStroke(KeyArea, Theme.Border, 0.5, 1)
+
+KeybindBtn = Instance.new("TextButton")
+KeybindBtn.Size = UDim2.new(1, -105, 1, 0)
+KeybindBtn.BackgroundTransparency = 1
+KeybindBtn.Text =
+    "⌨  Teleport Home: ["
+    .. tpKeybind.Name
+    .. "]"
+
+KeybindBtn.TextColor3 = Theme.Text2
+KeybindBtn.TextSize = 9
+KeybindBtn.Font = Enum.Font.Gotham
+KeybindBtn.TextXAlignment = Enum.TextXAlignment.Left
+KeybindBtn.Parent = KeyArea
+
+addPadding(KeybindBtn, 10, 0, 0, 0)
+
+KeybindBtn.MouseButton1Click:Connect(function()
+
+    listeningForKey = true
+
+    KeybindBtn.Text = "Press a key..."
+    KeybindBtn.TextColor3 = Theme.Yellow
+
+end)
+
+StopAutoFarmBtn = Instance.new("TextButton")
+StopAutoFarmBtn.Size = UDim2.new(0, 96, 0, 25)
+StopAutoFarmBtn.Position = UDim2.new(1, -101, 0.5, -12.5)
+StopAutoFarmBtn.BackgroundColor3 = Color3.fromRGB(90, 15, 25)
+StopAutoFarmBtn.Text = "■  STOP"
+StopAutoFarmBtn.TextColor3 = Color3.fromRGB(255, 125, 140)
+StopAutoFarmBtn.TextSize = 9
+StopAutoFarmBtn.Font = Enum.Font.GothamBold
+StopAutoFarmBtn.Visible = false
+StopAutoFarmBtn.Parent = KeyArea
+
+makeButton(StopAutoFarmBtn, Theme.Red)
+
+StopAutoFarmBtn.MouseButton1Click:Connect(function()
+
+    stopAutoFarm()
+
+    StopAutoFarmBtn.Visible = false
+
+    StatusLabel.Text = "Auto Farm stopped"
+    StatusLabel.TextColor3 = Theme.Red
+
+end)
+
+--==================================================
+-- EGG BROWSER TOGGLE
+--==================================================
+
+ToggleListBtn = Instance.new("TextButton")
+ToggleListBtn.Size = UDim2.new(1, 0, 0, 36)
+ToggleListBtn.Position = UDim2.new(0, 0, 0, 299)
+ToggleListBtn.BackgroundColor3 = Theme.Surface2
+ToggleListBtn.Text = "☷   Egg Browser                         ▼"
+ToggleListBtn.TextColor3 = Theme.Text
+ToggleListBtn.TextSize = 10
+ToggleListBtn.Font = Enum.Font.GothamBold
+ToggleListBtn.TextXAlignment = Enum.TextXAlignment.Left
+ToggleListBtn.Parent = ContentContainer
+
+addPadding(ToggleListBtn, 12, 0, 0, 0)
+makeButton(ToggleListBtn, Theme.AccentDark)
+
+--==================================================
+-- EGG LIST
+--==================================================
+
+ListContainerFrame = Instance.new("Frame")
+ListContainerFrame.Size = UDim2.new(1, 0, 0, 245)
+ListContainerFrame.Position = UDim2.new(0, 0, 0, 342)
+ListContainerFrame.BackgroundColor3 = Theme.Surface
+ListContainerFrame.Visible = false
+ListContainerFrame.Parent = ContentContainer
+
+createCorner(ListContainerFrame, 10)
+createStroke(ListContainerFrame, Theme.Border, 0.35, 1)
+
+EggCountLabel = Instance.new("TextLabel")
+EggCountLabel.Size = UDim2.new(1, -15, 0, 24)
+EggCountLabel.Position = UDim2.new(0, 10, 0, 5)
+EggCountLabel.BackgroundTransparency = 1
+EggCountLabel.Text = "Eggs: 0  •  Results: 0"
+EggCountLabel.TextColor3 = Theme.Text3
+EggCountLabel.TextSize = 9
+EggCountLabel.Font = Enum.Font.GothamMedium
+EggCountLabel.TextXAlignment = Enum.TextXAlignment.Left
+EggCountLabel.Parent = ListContainerFrame
+
+RefreshBtn = Instance.new("TextButton")
+RefreshBtn.Size = UDim2.new(0.5, -14, 0, 27)
+RefreshBtn.Position = UDim2.new(0, 7, 0, 31)
+RefreshBtn.BackgroundColor3 = Theme.Surface3
+RefreshBtn.Text = "↻  Refresh"
+RefreshBtn.TextColor3 = Theme.Text
+RefreshBtn.TextSize = 9
+RefreshBtn.Font = Enum.Font.GothamBold
+RefreshBtn.Parent = ListContainerFrame
+
+makeButton(RefreshBtn, Theme.AccentDark)
+
+SortBtn = Instance.new("TextButton")
+SortBtn.Size = UDim2.new(0.5, -14, 0, 27)
+SortBtn.Position = UDim2.new(0.5, 7, 0, 31)
+SortBtn.BackgroundColor3 = Theme.Surface3
+SortBtn.Text = "⇅  Name"
+SortBtn.TextColor3 = Theme.Text
+SortBtn.TextSize = 9
+SortBtn.Font = Enum.Font.GothamBold
+SortBtn.Parent = ListContainerFrame
+
+makeButton(SortBtn, Theme.AccentDark)
+
+SearchBox = Instance.new("TextBox")
+SearchBox.Size = UDim2.new(1, -14, 0, 28)
+SearchBox.Position = UDim2.new(0, 7, 0, 64)
+SearchBox.BackgroundColor3 = Theme.Background
+SearchBox.Text = ""
+SearchBox.PlaceholderText = "⌕  Search eggs..."
+SearchBox.PlaceholderColor3 = Theme.Text3
+SearchBox.TextColor3 = Theme.Text
+SearchBox.TextSize = 9
+SearchBox.Font = Enum.Font.Gotham
+SearchBox.ClearTextOnFocus = false
+SearchBox.TextXAlignment = Enum.TextXAlignment.Left
+SearchBox.Parent = ListContainerFrame
+
+createCorner(SearchBox, 7)
+createStroke(SearchBox, Theme.Border, 0.4, 1)
+
+addPadding(SearchBox, 10, 5, 0, 0)
+
+ScrollList = Instance.new("ScrollingFrame")
+ScrollList.Size = UDim2.new(1, -14, 1, -101)
+ScrollList.Position = UDim2.new(0, 7, 0, 96)
+ScrollList.BackgroundTransparency = 1
+ScrollList.BorderSizePixel = 0
+ScrollList.ScrollBarThickness = 3
+ScrollList.ScrollBarImageColor3 = Theme.AccentDark
+ScrollList.CanvasSize = UDim2.new(0, 0, 0, 0)
+ScrollList.Parent = ListContainerFrame
+
+UIListLayout = Instance.new("UIListLayout")
+UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+UIListLayout.Padding = UDim.new(0, 5)
+UIListLayout.Parent = ScrollList
+
+UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+
+    ScrollList.CanvasSize = UDim2.new(
+        0,
+        0,
+        0,
+        UIListLayout.AbsoluteContentSize.Y + 8
+    )
+
+end)
+
+--==================================================
+-- EGG LIST ITEM
+--==================================================
+
+local function createEggListItem(
+    egg,
+    itemHeight,
+    textSize
+)
+
+    local ItemFrame = Instance.new("Frame")
+
+    ItemFrame.Size = UDim2.new(1, -5, 0, itemHeight)
+    ItemFrame.BackgroundColor3 = Theme.Surface2
+    ItemFrame.Parent = ScrollList
+
+    createCorner(ItemFrame, 8)
+
+    createStroke(
+        ItemFrame,
+        Theme.Border,
+        0.55,
+        1
+    )
+
+    local eggIcon = Instance.new("ImageLabel")
+
+    eggIcon.Size = UDim2.new(
+        0,
+        itemHeight - 8,
+        0,
+        itemHeight - 8
+    )
+
+    eggIcon.Position = UDim2.new(
+        0,
+        5,
+        0.5,
+        -(itemHeight - 8) / 2
+    )
+
+    eggIcon.BackgroundColor3 = Theme.Surface3
+    eggIcon.BackgroundTransparency = 0.25
+    eggIcon.Image = getEggImage(egg.Name)
+    eggIcon.ScaleType = Enum.ScaleType.Fit
+    eggIcon.Parent = ItemFrame
+
+    createCorner(eggIcon, 6)
+
+    local nameLabel = Instance.new("TextLabel")
+
+    nameLabel.Size = UDim2.new(
+        1,
+        -205,
+        1,
+        0
+    )
+
+    nameLabel.Position = UDim2.new(
+        0,
+        itemHeight + 8,
+        0,
+        0
+    )
+
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.Text = egg.Name
+    nameLabel.TextColor3 = Theme.Text
+    nameLabel.TextSize = textSize
+    nameLabel.Font = Enum.Font.GothamMedium
+    nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+    nameLabel.TextTruncate = Enum.TextTruncate.AtEnd
+    nameLabel.Parent = ItemFrame
+
+    local distanceLabel = Instance.new("TextLabel")
+
+    distanceLabel.Size = UDim2.new(
+        0,
+        48,
+        1,
+        0
+    )
+
+    distanceLabel.Position = UDim2.new(
+        1,
+        -155,
+        0,
+        0
+    )
+
+    distanceLabel.BackgroundTransparency = 1
+    distanceLabel.TextColor3 = Theme.Text3
+    distanceLabel.TextSize = math.max(
+        8,
+        textSize - 2
+    )
+
+    distanceLabel.Font = Enum.Font.Gotham
+    distanceLabel.Text = "--"
+    distanceLabel.Parent = ItemFrame
+
+    local distance = getDistanceToTarget(egg)
+
+    if distance ~= math.huge then
+
+        distanceLabel.Text = string.format(
+            "%dm",
+            math.floor(distance + 0.5)
+        )
+
+    end
+
+    --==================================================
+    -- TELEPORT BUTTON
+    --==================================================
+
+    local TPBtn = Instance.new("TextButton")
+
+    TPBtn.Size = UDim2.new(
+        0,
+        36,
+        0,
+        itemHeight - 8
+    )
+
+    TPBtn.Position = UDim2.new(
+        1,
+        -145,
+        0.5,
+        -(itemHeight - 8) / 2
+    )
+
+    TPBtn.BackgroundColor3 = Theme.Surface3
+    TPBtn.Text = "TP"
+    TPBtn.TextColor3 = Theme.Accent
+    TPBtn.TextSize = 8
+    TPBtn.Font = Enum.Font.GothamBold
+    TPBtn.Parent = ItemFrame
+
+    makeButton(TPBtn, Theme.AccentDark)
+
+    TPBtn.MouseButton1Click:Connect(function()
+
+        if not egg.Parent then
+            return
+        end
+
+        local success = teleportToModel(egg)
+
+        if success then
+
+            StatusLabel.Text =
+                "TP → " .. egg.Name
+
+            StatusLabel.TextColor3 =
+                Theme.Accent
+
+        end
+    end)
+
+    --==================================================
+    -- AUTO FARM
+    --==================================================
+
+    local AutoFarmBtn = Instance.new("TextButton")
+
+    AutoFarmBtn.Size = UDim2.new(
+        0,
+        55,
+        0,
+        itemHeight - 8
+    )
+
+    AutoFarmBtn.Position = UDim2.new(
+        1,
+        -105,
+        0.5,
+        -(itemHeight - 8) / 2
+    )
+
+    AutoFarmBtn.BackgroundColor3 = Theme.Surface3
+    AutoFarmBtn.Text = "Farm"
+    AutoFarmBtn.TextColor3 = Theme.Text
+    AutoFarmBtn.TextSize = 8
+    AutoFarmBtn.Font = Enum.Font.GothamBold
+    AutoFarmBtn.Parent = ItemFrame
+
+    makeButton(
+        AutoFarmBtn,
+        Theme.AccentDark
+    )
+
+    setAutoFarmButtonState(
+        AutoFarmBtn,
+        autoFarmEggs[egg.Name] == true
+    )
+
+    AutoFarmBtn.MouseButton1Click:Connect(function()
+
+        if not egg.Parent then
+            return
+        end
+
+        local name = egg.Name
+
+        autoFarmEggs[name] =
+            not autoFarmEggs[name]
+
+        for processedEgg in pairs(
+            autoFarmProcessed
+        ) do
+
+            if processedEgg
+                and processedEgg.Name == name then
+
+                autoFarmProcessed[processedEgg] =
+                    nil
+
+            end
+        end
+
+        setAutoFarmButtonState(
+            AutoFarmBtn,
+            autoFarmEggs[name] == true
+        )
+
+        if autoFarmEggs[name] then
+
+            StatusLabel.Text =
+                "Farm selected → " .. name
+
+            StatusLabel.TextColor3 =
+                Theme.Accent
+
+            if not autoFarmActive then
+                startAutoFarm()
+            end
+
+        else
+
+            StatusLabel.Text =
+                "Farm removed → " .. name
+
+            StatusLabel.TextColor3 =
+                Theme.Text2
+
+            local anySelected = false
+
+            for _ in pairs(autoFarmEggs) do
+                anySelected = true
+                break
+            end
+
+            if not anySelected then
+
+                stopAutoFarm()
+
+                StopAutoFarmBtn.Visible =
+                    false
+
+            end
+        end
+
+        StopAutoFarmBtn.Visible =
+            autoFarmActive
+
+    end)
+
+    --==================================================
+    -- ESP BUTTON
+    --==================================================
+
+    local GreenESPBtn = Instance.new("TextButton")
+
+    GreenESPBtn.Size = UDim2.new(
+        0,
+        43,
+        0,
+        itemHeight - 8
+    )
+
+    GreenESPBtn.Position = UDim2.new(
+        1,
+        -48,
+        0.5,
+        -(itemHeight - 8) / 2
+    )
+
+    GreenESPBtn.BackgroundColor3 =
+        Theme.Surface3
+
+    GreenESPBtn.TextColor3 =
+        Theme.Accent
+
+    GreenESPBtn.TextSize = 8
+    GreenESPBtn.Font =
+        Enum.Font.GothamBold
+
+    GreenESPBtn.Parent =
+        ItemFrame
+
+    makeButton(
+        GreenESPBtn,
+        Theme.AccentDark
+    )
+
+    local data = eggData[egg]
+
+    if data and data.CustomActive then
+
+        GreenESPBtn.Text = "ON"
+        GreenESPBtn.TextColor3 =
+            Theme.Accent
+
+    else
+
+        GreenESPBtn.Text = "ESP"
+
+    end
+
+    GreenESPBtn.MouseButton1Click:Connect(function()
+
+        if not eggData[egg] then
+
+            eggData[egg] = {
+                Highlight = nil,
+                NameBillboard = nil,
+                CustomColor =
+                    Config.CustomESPColor,
+                CustomActive = false
+            }
+
+        end
+
+        local eggInfo =
+            eggData[egg]
+
+        eggInfo.CustomActive =
+            not eggInfo.CustomActive
+
+        eggInfo.CustomColor =
+            Config.CustomESPColor
+
+        if eggInfo.CustomActive then
+
+            GreenESPBtn.Text = "ON"
+            GreenESPBtn.TextColor3 =
+                Theme.Accent
+
+            StatusLabel.Text =
+                "ESP → " .. egg.Name
+
+            StatusLabel.TextColor3 =
+                Theme.Accent
+
+        else
+
+            GreenESPBtn.Text = "ESP"
+            GreenESPBtn.TextColor3 =
+                Theme.Text2
+
+            StatusLabel.Text =
+                "ESP off → " .. egg.Name
+
+            StatusLabel.TextColor3 =
+                Theme.Text2
+
+        end
+
+        updateEggESP(egg)
+
+    end)
+end
+
+--==================================================
+-- LIST FUNCTIONS
+--==================================================
+
+local function clearEggList()
+
+    for _, child in ipairs(
+        ScrollList:GetChildren()
+    ) do
+
+        if child ~= UIListLayout then
+            child:Destroy()
+        end
+
+    end
+end
+
+local function getEggsForList()
+
+    local eggs = {}
+
+    if not RenderedEggsFolder then
+        return eggs
+    end
+
+    for _, egg in ipairs(
+        RenderedEggsFolder:GetChildren()
+    ) do
+
+        if egg:IsA("Model")
+            or egg:IsA("BasePart") then
+
+            table.insert(
+                eggs,
+                egg
+            )
+
+        end
+    end
+
+    table.sort(
+        eggs,
+        function(a, b)
+
+            if sortMode == "Distance" then
+
+                return getDistanceToTarget(a)
+                    <
+                    getDistanceToTarget(b)
+
+            end
+
+            return a.Name:lower()
+                <
+                b.Name:lower()
+
+        end
+    )
+
+    return eggs
+end
+
+local function populateList()
+
+    clearEggList()
+
+    if not RenderedEggsFolder then
+
+        EggCountLabel.Text =
+            "Eggs: 0"
+
+        return
+    end
+
+    local query =
+        currentSearchQuery:lower()
+
+    local eggs =
+        getEggsForList()
+
+    local visibleCount = 0
+
+    local itemHeight =
+        isMobileMode
+        and 34
+        or 36
+
+    local textSize =
+        isMobileMode
+        and 9
+        or 10
+
+    for _, egg in ipairs(eggs) do
+
+        local matches =
+            query == ""
+            or string.find(
+                egg.Name:lower(),
+                query,
+                1,
+                true
+            )
+
+        if matches then
+
+            visibleCount += 1
+
+            createEggListItem(
+                egg,
+                itemHeight,
+                textSize
+            )
+
+        end
+    end
+
+    EggCountLabel.Text =
+        "Eggs: "
+        .. tostring(#eggs)
+        .. "   •   Results: "
+        .. tostring(visibleCount)
+
+    if visibleCount == 0 then
+
+        local emptyLabel =
+            Instance.new("TextLabel")
+
+        emptyLabel.Size =
+            UDim2.new(
+                1,
+                -10,
+                0,
+                35
+            )
+
+        emptyLabel.BackgroundTransparency =
+            1
+
+        emptyLabel.Text =
+            "No eggs found"
+
+        emptyLabel.TextColor3 =
+            Theme.Text3
+
+        emptyLabel.TextSize = 10
+
+        emptyLabel.Font =
+            Enum.Font.Gotham
+
+        emptyLabel.Parent =
+            ScrollList
+
+    end
+end
+
+--==================================================
+-- SEARCH
+--==================================================
+
+SearchBox:GetPropertyChangedSignal(
+    "Text"
+):Connect(function()
+
+    local newQuery =
+        SearchBox.Text
+
+    if newQuery ==
+        currentSearchQuery then
+
+        return
+    end
+
+    currentSearchQuery =
+        newQuery
+
+    populateList()
+
+end)
+
+--==================================================
+-- REFRESH
+--==================================================
+
+RefreshBtn.MouseButton1Click:Connect(function()
+
+    populateList()
+
+    updateAllESP()
+
+    StatusLabel.Text =
+        "Egg list refreshed"
+
+    StatusLabel.TextColor3 =
+        Theme.Accent
+
+end)
+
+--==================================================
+-- SORT
+--==================================================
+
+SortBtn.MouseButton1Click:Connect(function()
+
+    if sortMode == "Name" then
+
+        sortMode = "Distance"
+
+        SortBtn.Text =
+            "⇅  Distance"
+
+    else
+
+        sortMode = "Name"
+
+        SortBtn.Text =
+            "⇅  Name"
+
+    end
+
+    populateList()
+
+end)
+
+--==================================================
+-- LIST TOGGLE
+--==================================================
+
+ToggleListBtn.MouseButton1Click:Connect(function()
+
+    ListContainerFrame.Visible =
+        not ListContainerFrame.Visible
+
+    if ListContainerFrame.Visible then
+
+        ToggleListBtn.Text =
+            "☷   Egg Browser                         ▲"
+
+        populateList()
+
+    else
+
+        ToggleListBtn.Text =
+            "☷   Egg Browser                         ▼"
+
+    end
+end)
+
+--==================================================
+-- MINIMIZE
+--==================================================
+
+local currentExpandedWidth =
+    Config.PCWidth
+
+local currentExpandedHeight =
+    Config.PCHeight
+
+MinimizeBtn.MouseButton1Click:Connect(function()
+
+    isMinimized =
+        not isMinimized
+
+    if isMinimized then
+
+        ContentContainer.Visible =
+            false
+
+        tween(
+            MainFrame,
+            {
+                Size = UDim2.new(
+                    0,
+                    currentExpandedWidth,
+                    0,
+                    64
+                )
+            },
+            0.18
+        )
+
+        MinimizeBtn.Text = "+"
+
+    else
+
+        tween(
+            MainFrame,
+            {
+                Size = UDim2.new(
+                    0,
+                    currentExpandedWidth,
+                    0,
+                    currentExpandedHeight
+                )
+            },
+            0.18
+        )
+
+        task.delay(
+            0.12,
+            function()
+
+                if not isMinimized then
+                    ContentContainer.Visible =
+                        true
+                end
+
+            end
+        )
+
+        MinimizeBtn.Text = "−"
+
+    end
+end)
+
+--==================================================
+-- DRAG
+--==================================================
+
+local dragging = false
+local dragInput
+local dragStart
+local startPosition
+
+TopBar.InputBegan:Connect(function(input)
+
+    if input.UserInputType ==
+        Enum.UserInputType.MouseButton1
+        or input.UserInputType ==
+        Enum.UserInputType.Touch then
+
+        dragging = true
+
+        dragStart =
+            input.Position
+
+        startPosition =
+            MainFrame.Position
+
+        input.Changed:Connect(
+            function()
+
+                if input.UserInputState ==
+                    Enum.UserInputState.End then
+
+                    dragging = false
+
+                end
+
+            end
+        )
+    end
+end)
+
+TopBar.InputChanged:Connect(function(input)
+
+    if input.UserInputType ==
+        Enum.UserInputType.MouseMovement
+        or input.UserInputType ==
+        Enum.UserInputType.Touch then
+
+        dragInput = input
+
+    end
+end)
+
+UserInputService.InputChanged:Connect(
+    function(input)
+
+        if input == dragInput
+            and dragging then
+
+            local delta =
+                input.Position -
+                dragStart
+
+            MainFrame.Position =
+                UDim2.new(
+                    startPosition.X.Scale,
+                    startPosition.X.Offset +
+                        delta.X,
+
+                    startPosition.Y.Scale,
+                    startPosition.Y.Offset +
+                        delta.Y
+                )
+
+        end
+    end
+)
+
+--==================================================
+-- KEYBIND
+--==================================================
+
+UserInputService.InputBegan:Connect(
+    function(
+        input,
+        gameProcessed
+    )
+
+        if listeningForKey then
+
+            if input.UserInputType ==
+                Enum.UserInputType.Keyboard then
+
+                tpKeybind =
+                    input.KeyCode
+
+                listeningForKey =
+                    false
+
+                KeybindBtn.Text =
+                    "⌨  Teleport Home: ["
+                    .. tpKeybind.Name
+                    .. "]"
+
+                KeybindBtn.TextColor3 =
+                    Theme.Text2
+
+            end
+
+            return
+        end
+
+        if gameProcessed then
+            return
+        end
+
+        if input.UserInputType ==
+            Enum.UserInputType.Keyboard then
+
+            if input.KeyCode ==
+                tpKeybind then
+
+                teleportToHomePlot()
+
+            end
+        end
+    end
+)
+
+--==================================================
+-- ESP UPDATE
+--==================================================
+
+task.spawn(function()
+
+    while ScreenGui.Parent do
+
+        if mainESPActive then
+
+            for egg, data in pairs(
+                eggData
+            ) do
+
+                if egg
+                    and egg.Parent then
+
+                    if data.NameBillboard
+                        and data.NameBillboard.Enabled then
+
+                        updateEggLabel(egg)
+
+                    end
+                end
+            end
+        end
+
+        task.wait(0.20)
+    end
+end)
+
+--==================================================
+-- EGG DETECTION
+--==================================================
+
+if RenderedEggsFolder then
+
+    RenderedEggsFolder.ChildAdded:Connect(
+        function(egg)
+
+            autoFarmProcessed[egg] =
+                nil
+
+            task.wait(0.05)
+
+            updateEggESP(egg)
+
+            if ListContainerFrame.Visible then
+                populateList()
+            end
+
+        end
+    )
+
+    RenderedEggsFolder.ChildRemoved:Connect(
+        function(egg)
+
+            removeEggData(egg)
+
+            if ListContainerFrame.Visible then
+                populateList()
+            end
+
+        end
+    )
+
+    for _, egg in ipairs(
+        RenderedEggsFolder:GetChildren()
+    ) do
+
+        updateEggESP(egg)
+
+    end
+end
+
+--==================================================
+-- PC MODE
+--==================================================
+
+local function setPCMode()
+
+    isMobileMode = false
+
+    currentExpandedWidth =
+        Config.PCWidth
+
+    currentExpandedHeight =
+        Config.PCHeight
+
+    MainFrame.Size =
+        UDim2.new(
+            0,
+            Config.PCWidth,
+            0,
+            Config.PCHeight
+        )
+
+    MainFrame.Position =
+        UDim2.new(
+            0.5,
+            -Config.PCWidth / 2,
+            0.45,
+            -Config.PCHeight / 2
+        )
+
+    ContentContainer.Size =
+        UDim2.new(
+            1,
+            -24,
+            1,
+            -76
+        )
+
+    ContentContainer.Position =
+        UDim2.new(
+            0,
+            12,
+            0,
+            70
+        )
+
+    DeviceFrame:Destroy()
+
+    MainFrame.Visible = true
+
+    populateList()
+
+end
+
+--==================================================
+-- MOBILE MODE
+--==================================================
+
+local function setMobileMode()
+
+    isMobileMode = true
+
+    currentExpandedWidth =
+        Config.MobileWidth
+
+    currentExpandedHeight =
+        Config.MobileHeight
+
+    MainFrame.Size =
+        UDim2.new(
+            0,
+            Config.MobileWidth,
+            0,
+            Config.MobileHeight
+        )
+
+    MainFrame.Position =
+        UDim2.new(
+            0.5,
+            -Config.MobileWidth / 2,
+            0.5,
+            -Config.MobileHeight / 2
+        )
+
+    TopBar.Size =
+        UDim2.new(
+            1,
+            0,
+            0,
+            58
+        )
+
+    Logo.Size =
+        UDim2.new(
+            0,
+            36,
+            0,
+            36
+        )
+
+    Logo.Position =
+        UDim2.new(
+            0,
+            9,
+            0,
+            11
+        )
+
+    TitleLabel.Position =
+        UDim2.new(
+            0,
+            55,
+            0,
+            11
+        )
+
+    TitleLabel.TextSize = 14
+
+    AuthorLabel.Position =
+        UDim2.new(
+            0,
+            55,
+            0,
+            31
+        )
+
+    AuthorLabel.TextSize = 8
+
+    ContentContainer.Size =
+        UDim2.new(
+            1,
+            -18,
+            1,
+            -68
+        )
+
+    ContentContainer.Position =
+        UDim2.new(
+            0,
+            9,
+            0,
+            64
+        )
+
+    StatusCard.Size =
+        UDim2.new(
+            1,
+            0,
+            0,
+            34
+        )
+
+    StatusLabel.TextSize = 9
+
+    ModeAutoFarmBtn.Size =
+        UDim2.new(
+            0.5,
+            -3,
+            0,
+            31
+        )
+
+    ModeTeleportBtn.Size =
+        UDim2.new(
+            0.5,
+            -3,
+            0,
+            31
+        )
+
+    ModeAutoFarmBtn.TextSize = 9
+    ModeTeleportBtn.TextSize = 9
+
+    FeatureFrame.Size =
+        UDim2.new(
+            1,
+            0,
+            0,
+            106
+        )
+
+    ToggleGlobalESPBtn.Size =
+        UDim2.new(
+            1,
+            0,
+            0,
+            30
+        )
+
+    AutoBestEggBtn.Size =
+        UDim2.new(
+            1,
+            0,
+            0,
+            30
+        )
+
+    TPHomeBtn.Size =
+        UDim2.new(
+            1,
+            0,
+            0,
+            30
+        )
+
+    KeyArea.Size =
+        UDim2.new(
+            1,
+            0,
+            0,
+            30
+        )
+
+    ListContainerFrame.Size =
+        UDim2.new(
+            1,
+            0,
+            0,
+            145
+        )
+
+    ListContainerFrame.Position =
+        UDim2.new(
+            0,
+            0,
+            0,
+            333
+        )
+
+    SearchBox.TextSize = 8
+
+    DeviceFrame:Destroy()
+
+    MainFrame.Visible = true
+
+    populateList()
+
+end
+
+--==================================================
+-- DEVICE BUTTONS
+--==================================================
+
+PCBtn.MouseButton1Click:Connect(
+    function()
+        setPCMode()
+    end
+)
+
+MobileBtn.MouseButton1Click:Connect(
+    function()
+        setMobileMode()
+    end
+)
+
+--==================================================
+-- INITIAL
+--==================================================
+
+updateMovementModeButtons()
+
+print(
+    "[Eggs ESP v3.0] Black & Red UI loaded successfully."
+)
+
+print(
+    "[Eggs ESP] Made By Khenbanks"
+)
+```
+
