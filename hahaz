@@ -1,4 +1,4 @@
-```lua
+
 --==================================================
 -- EGGS ESP v3.0
 -- BLACK & RED MODERN UI
@@ -1896,5 +1896,4 @@ print(
 print(
     "[Eggs ESP] Made By Khenbanks"
 )
-```
 
